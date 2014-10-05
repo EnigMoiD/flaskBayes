@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, json
 import thinkbayes2 as tb
 
 app = Flask(__name__)
@@ -10,14 +10,13 @@ def hello():
 
 @app.route("/api/pmf/", methods=["GET"])
 def pmf():
-	jsondon = request.get_json()
-	print(jsondon)
-
 	pmf = tb.Pmf()
 	for i in range(1, 7):
 		pmf.Set(i, 1)
 	pmf.Normalize()
-	return str(pmf)
+	pmfjson = json.jsonify(pmf.d)
+	
+	return pmfjson
 
 """
 a user interaction
