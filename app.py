@@ -14,7 +14,8 @@ def pmf():
 	for i in range(1, 7):
 		pmf.Set(i, 1)
 	pmf.Normalize()
-	pmfjson = json.jsonify(pmf.d)
+	pmf += pmf
+	pmfjson = json.jsonify({ "outcomes": pmf.d.keys(), "probabilities": pmf.d.values() })
 	
 	return pmfjson
 
