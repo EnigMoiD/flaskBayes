@@ -6,18 +6,39 @@ print(__name__)
 
 @app.route("/")
 def hello():
-    return render_template("index.html")
+	return render_template("index.html")
 
-@app.route("/api/pmf/", methods=["GET"])
+@app.route("/api/pmf", methods=["GET", "POST"])
 def pmf():
-	pmf = tb.Pmf()
-	for i in range(1, 7):
-		pmf.Set(i, 1)
-	pmf.Normalize()
-	pmf += pmf
-	pmfjson = json.jsonify({ "outcomes": pmf.d.keys(), "probabilities": pmf.d.values() })
-	
-	return pmfjson
+	if request.method == "GET":
+		pmf = tb.Pmf()
+		for i in range(1, 7):
+			pmf.Set(i, 1)
+		pmf.Normalize()
+		pmf += pmf
+		suitejson = json.jsonify({ "pmf": zip(pmf.d.keys(), pmf.d.values()) })
+
+		return suitejson
+	else:
+		class Dice(tb.Suite):
+			def Likelihood(self, data, hypo):
+				if hypo < data:
+					return 0
+				else:
+					return 1.0/hypo
+
+		pmf = dict(request.get_json()['pmf'])
+		update = request.get_json()['update']
+
+		dice = Dice(tb.MakePmfFromDict(pmf))
+		dice.Update(update)
+
+		return json.jsonify({ "pmf": zip(dice.d.keys(), dice.d.values()) })
+
+"""
+posting here with a pmf and an update
+responds with the updated version of the pmf
+"""
 
 """
 a user interaction
@@ -39,4 +60,4 @@ PMF: javascript object {outcome: probability}
 """
 
 if __name__ == "__main__":
-    app.run()
+	app.run(debug=True)
