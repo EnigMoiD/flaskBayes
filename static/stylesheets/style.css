@@ -1,0 +1,15 @@
+* {
+  padding: 0px;
+  margin: 0px;
+}
+.button {
+  min-height: 200px;
+  display: inline-block;
+  width: 50%;
+}
+.heads {
+  background-color: #f00;
+}
+.tails {
+  background-color: #008000;
+}

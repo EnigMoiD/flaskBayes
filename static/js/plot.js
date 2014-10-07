@@ -63,24 +63,45 @@
 		})
 		.attr("width", width/pmf.length)
 		.attr("class", "bar")
-		.attr("outcome", function(d) {return d[0]})
 
 		d3.selectAll(".bar").on("click", function() {
-			$.ajax("/api/pmf", {
-				data: JSON.stringify({
-					pmf : pmf,
-					update: parseInt(d3.select(this).attr("outcome"))
-				}),
-				type: "POST",
-				dataType: "json",
-				contentType: "application/json",
-				success: function(pmf) {
-					d3updateSuitePlot(svg, pmf)
-				}
-			})
+			updateSuite(pmf, d3.select(this).attr("outcome"))
+		})
+
+		d3.select("body").append("div")
+		.attr("class", "button heads")
+		.attr("data", "H")
+		.on("click", function() {
+			var data = d3.select(this).attr("data")
+
+			updateSuite(pmf, data)
+		})
+
+		d3.select("body").append("div")
+		.attr("class", "button tails")
+		.attr("data", "T")
+		.on("click", function() {
+			var data = d3.select(this).attr("data")
+
+			updateSuite(pmf, data)
 		})
 
 		return svg
+	}
+
+	var updateSuite = function(pmf, data) {
+		$.ajax("/api/pmf", {
+			data: JSON.stringify({
+				pmf : pmf,
+				update: data
+			}),
+			type: "POST",
+			dataType: "json",
+			contentType: "application/json",
+			success: function(pmf) {
+				d3updateSuitePlot(svg, pmf)
+			}
+		})
 	}
 
 	var d3getSuite = function(jsonUrl, callback) {
