@@ -4,21 +4,6 @@ import thinkbayes2 as tb
 app = Flask(__name__)
 print(__name__)
 
-class Euro(tb.Suite):
-	def Likelihood(self, data, hypo):
-		x = hypo / 100.0
-		if data == 'H':
-			return x
-		else:
-			return 1-x
-
-pmf = tb.Pmf()
-for i in range(1, 101):
-	pmf.Set(i, 1)
-pmf.Normalize()
-
-euro = Euro(tb.MakePmfFromDict(pmf))
-
 @app.route("/")
 def hello():
 	return render_template("index.html")
@@ -26,18 +11,26 @@ def hello():
 @app.route("/api/pmf", methods=["GET", "POST"])
 def pmf():
 	if request.method == "GET":
-		# pmf = tb.Pmf()
-		# for i in range(1, 101):
-		# 	pmf.Set(i, 1)
-		# pmf.Normalize()
-		suitejson = json.jsonify({ "pmf": zip(euro.d.keys(), euro.d.values()) })
+		pmf = tb.Pmf()
+		for i in range(1, 101):
+			pmf.Set(i, 1)
+		pmf.Normalize()
+		suitejson = json.jsonify({ "pmf": zip(pmf.d.keys(), pmf.d.values()) })
 
 		return suitejson
 	else:
+		class Euro(tb.Suite):
+			def Likelihood(self, data, hypo):
+				x = hypo / 100.0
+				if data == 'H':
+					return x
+				else:
+					return 1-x
 
-		# pmf = dict(request.get_json()['pmf'])
+		pmf = dict(request.get_json()['pmf'])
 		update = request.get_json()['update']
 
+		euro = Euro(tb.MakePmfFromDict(pmf))
 		euro.Update(update)
 
 		return json.jsonify({ "pmf": zip(euro.d.keys(), euro.d.values()) })
@@ -68,5 +61,3 @@ PMF: javascript object {outcome: probability}
 
 if __name__ == "__main__":
 	app.run(debug=True)
-
-	euro = Euro(tb.MakePmfFromDict(pmf))

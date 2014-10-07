@@ -36,6 +36,20 @@
 		.attr("height", function(d) {
 			return height - svg.y(d[1])
 		})
+
+		d3.select(".heads")
+		.on("click", function() {
+			var data = d3.select(this).attr("data")
+
+			updateSuite(pmf, data)
+		})
+
+		d3.select(".tails")
+		.on("click", function() {
+			var data = d3.select(this).attr("data")
+
+			updateSuite(pmf, data)
+		})
 	}
 
 	var d3createSuitePlot = function(pmf) {
@@ -63,10 +77,7 @@
 		})
 		.attr("width", width/pmf.length)
 		.attr("class", "bar")
-
-		d3.selectAll(".bar").on("click", function() {
-			updateSuite(pmf, d3.select(this).attr("outcome"))
-		})
+		.attr("data", "H")
 
 		d3.select("body").append("div")
 		.attr("class", "button heads")
