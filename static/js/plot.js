@@ -3,6 +3,66 @@
 		return "translate(" + left + "," + top + ")"
 	}
 
+	var d3verticalBar = function(svg, data, options) {
+		// assumes linear scale, graph data is
+		// {x:"", y:""}
+		// this returns a graph object
+		// options can contain things like scale, style
+		// attributes of the plot
+
+		var graph = this
+
+		graph.scale = {}
+
+		graph.data = data
+		graph.svg = svg
+		graph.width = parseInt(svg.style("width"))
+		graph.height = parseInt(svg.style("height"))
+
+		graph.scale.x = d3.scale.linear()
+		.domain([_.min(data.x), _.max(data.x)])
+		.range([0, graph.width])
+
+		graph.scale.y = d3.scale.linear()
+		.domain([0, _.max(data.y)])
+		.range([graph.height, 0])
+
+		// actually do the plotting
+
+		graph.svg.selectAll("rect")
+		.data(graph.data.y)
+		.enter().append("rect")
+		.attr("x", function(d, i) {
+			return graph.scale.x(i)
+		})
+		.attr("y", function(d) {
+			return graph.scale.y(d)
+		})
+		.attr("height", function(d) {
+			return graph.height - graph.scale.y(d)
+		})
+		.attr("width", graph.width/graph.data.y.length)
+		.attr("class", "bar")
+
+		graph.update = function(data) {
+			graph.scale.y = d3.scale.linear()
+			.domain([0, _.max(data.y)])
+			.range([graph.height, 0])
+
+			graph.svg.selectAll("rect")
+			.data(data.y)
+			.transition()
+			.attr("y", function(d) {
+				return graph.scale.y(d)
+			})
+			.attr("height", function(d) {
+				return height - graph.scale.y(d)
+			})
+		}
+
+		return graph
+	}
+
 	var svgAppendCircle = function(svg, r, x, y) {
 		return svg.append("circle")
 		.attr("r", r)
@@ -10,74 +70,33 @@
 		.attr("cy", y)
 	}
 
-	var dictFromArrays = function(array) {
-		dict = {}
+	// I give it x and y scales, data, and an svg
+	// it fills that svg with a scaled bar graph of the data
 
-		for (var i in array) {
-			dict[array[i][0]] = array[i][1]
-		}
-
-		return dict
-	}
-
-	var d3updateSuitePlot = function(svg, pmf) {
+	var d3updateSuitePlot = function(graph, pmf) {
 		var pmf = pmf.pmf
 
-		svg.y = d3.scale.linear()
-		.domain([0, _.max(pmf, function(d){return d[1]})[1]])
-		.range([height, 0])
-
-		svg.selectAll("rect")
-		.data(pmf)
-		.transition()
-		.attr("y", function(d) {
-			return svg.y(d[1])
-		})
-		.attr("height", function(d) {
-			return height - svg.y(d[1])
-		})
+		graph.update(pmf)
 
 		d3.select(".heads")
 		.on("click", function() {
 			var data = d3.select(this).attr("data")
 
-			updateSuite(pmf, data)
+			updateSuite(graph, pmf, data)
 		})
 
 		d3.select(".tails")
 		.on("click", function() {
 			var data = d3.select(this).attr("data")
 
-			updateSuite(pmf, data)
+			updateSuite(graph, pmf, data)
 		})
 	}
 
 	var d3createSuitePlot = function(pmf) {
 		var pmf = pmf.pmf
 
-		svg.x = d3.scale.linear()
-		.domain([0, pmf.length])
-		.range([0, width])
-
-		svg.y = d3.scale.linear()
-		.domain([0, _.max(pmf, function(d){return d[1]})[1]])
-		.range([height, 0])
-
-		svg.selectAll("rect")
-		.data(pmf)
-		.enter().append("rect")
-		.attr("x", function(d, i) {
-			return svg.x(i)
-		})
-		.attr("y", function(d) {
-			return svg.y(d[1])
-		})
-		.attr("height", function(d) {
-			return height - svg.y(d[1])
-		})
-		.attr("width", width/pmf.length)
-		.attr("class", "bar")
-		.attr("data", "H")
+		window.bargraph = d3verticalBar(svg, pmf)
 
 		d3.select("body").append("div")
 		.attr("class", "button heads")
@@ -85,7 +104,7 @@
 		.on("click", function() {
 			var data = d3.select(this).attr("data")
 
-			updateSuite(pmf, data)
+			updateSuite(bargraph, pmf, data)
 		})
 
 		d3.select("body").append("div")
@@ -94,13 +113,13 @@
 		.on("click", function() {
 			var data = d3.select(this).attr("data")
 
-			updateSuite(pmf, data)
+			updateSuite(bargraph, pmf, data)
 		})
 
 		return svg
 	}
 
-	var updateSuite = function(pmf, data) {
+	var updateSuite = function(graph, pmf, data) {
 		$.ajax("/api/pmf", {
 			data: JSON.stringify({
 				pmf : pmf,
@@ -110,7 +129,7 @@
 			dataType: "json",
 			contentType: "application/json",
 			success: function(pmf) {
-				d3updateSuitePlot(svg, pmf)
+				d3updateSuitePlot(graph, pmf)
 			}
 		})
 	}

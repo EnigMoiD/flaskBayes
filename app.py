@@ -14,7 +14,7 @@ This works fine.
 """
 
 def packaged(pmf):
-	return json.jsonify({ "pmf": zip(pmf.d.keys(), pmf.d.values()) })
+	return json.jsonify({ "pmf": {'x': pmf.d.keys(), 'y': pmf.d.values()} })
 
 def suiteupdate(request):
 	return dict(request['pmf']), request['update']
@@ -43,10 +43,10 @@ def pmf():
 
 		pmf, update = suiteupdate(request.get_json())
 
-		euro = Euro(tb.MakePmfFromDict(pmf))
+		euro = Euro(tb.MakePmfFromDict(dict(zip(pmf['x'], pmf['y']))))
 		euro.Update(update)
 
-		return json.jsonify({ "pmf": zip(euro.d.keys(), euro.d.values()) })
+		return packaged(euro)
 
 if __name__ == "__main__":
 	app.run(debug=True)
