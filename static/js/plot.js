@@ -58,39 +58,11 @@
 			.attr("height", function(d) {
 				return height - graph.scale.y(d)
 			})
+
+			graph.data = data
 		}
 
 		return graph
-	}
-
-	var svgAppendCircle = function(svg, r, x, y) {
-		return svg.append("circle")
-		.attr("r", r)
-		.attr("cx", x)
-		.attr("cy", y)
-	}
-
-	// I give it x and y scales, data, and an svg
-	// it fills that svg with a scaled bar graph of the data
-
-	var d3updateSuitePlot = function(graph, pmf) {
-		var pmf = pmf.pmf
-
-		graph.update(pmf)
-
-		d3.select(".heads")
-		.on("click", function() {
-			var data = d3.select(this).attr("data")
-
-			updateSuite(graph, pmf, data)
-		})
-
-		d3.select(".tails")
-		.on("click", function() {
-			var data = d3.select(this).attr("data")
-
-			updateSuite(graph, pmf, data)
-		})
 	}
 
 	var d3createSuitePlot = function(pmf) {
@@ -102,18 +74,18 @@
 		.attr("class", "button heads")
 		.attr("data", "H")
 		.on("click", function() {
-			var data = d3.select(this).attr("data")
+			var update = d3.select(this).attr("data")
 
-			updateSuite(bargraph, pmf, data)
+			updateSuite(bargraph, bargraph.data, update)
 		})
 
 		d3.select("body").append("div")
 		.attr("class", "button tails")
 		.attr("data", "T")
 		.on("click", function() {
-			var data = d3.select(this).attr("data")
+			var update = d3.select(this).attr("data")
 
-			updateSuite(bargraph, pmf, data)
+			updateSuite(bargraph, bargraph.data, update)
 		})
 
 		return svg
@@ -129,7 +101,7 @@
 			dataType: "json",
 			contentType: "application/json",
 			success: function(pmf) {
-				d3updateSuitePlot(graph, pmf)
+				graph.update(pmf.pmf)
 			}
 		})
 	}
