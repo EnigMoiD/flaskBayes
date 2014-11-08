@@ -1,30 +1,30 @@
 (function() {
-	var svgTranslate = function(left, top) {
+	window.svgTranslate = function(left, top) {
 		return "translate(" + left + "," + top + ")"
 	}
 
-	var d3verticalBar = function(svg, data, options) {
+	window.d3verticalBar = function(svg, data, options) {
 		// assumes linear scale, graph data is
-		// {x:"", y:""}
+		// {x:[], y:[]}
 		// this returns a graph object
 		// options can contain things like scale, style
 		// attributes of the plot
 
 		var graph = this
 
-		graph.scale = {}
-
 		graph.data = data
 		graph.svg = svg
 		graph.width = parseInt(svg.style("width"))
 		graph.height = parseInt(svg.style("height"))
+
+		graph.scale = {}
 
 		graph.scale.x = d3.scale.linear()
 		.domain([_.min(data.x), _.max(data.x)])
 		.range([0, graph.width])
 
 		graph.scale.y = d3.scale.linear()
-		.domain([0, _.max(data.y)])
+		.domain(options.ydomain || [0, _.max(data.y)])
 		.range([graph.height, 0])
 
 		// actually do the plotting
@@ -45,10 +45,6 @@
 		.attr("class", "bar")
 
 		graph.update = function(data) {
-			graph.scale.y = d3.scale.linear()
-			.domain([0, _.max(data.y)])
-			.range([graph.height, 0])
-
 			graph.svg.selectAll("rect")
 			.data(data.y)
 			.transition()
@@ -65,14 +61,14 @@
 		return graph
 	}
 
-	var d3createSuitePlot = function(pmf) {
+	window.d3createSuitePlot = function(pmf, svg) {
 		var pmf = pmf.pmf
 
-		window.bargraph = d3verticalBar(svg, pmf)
+		window.bargraph = d3verticalBar(svg, pmf, {ydomain: [0, 1]})
 
 		d3.select("body").append("div")
 		.attr("class", "button heads")
-		.attr("data", "H")
+		.attr("data", "HHHHHHHHHH")
 		.on("click", function() {
 			var update = d3.select(this).attr("data")
 
@@ -81,7 +77,7 @@
 
 		d3.select("body").append("div")
 		.attr("class", "button tails")
-		.attr("data", "T")
+		.attr("data", "TTTTTTTTTT")
 		.on("click", function() {
 			var update = d3.select(this).attr("data")
 
@@ -91,7 +87,7 @@
 		return svg
 	}
 
-	var updateSuite = function(graph, pmf, data) {
+	window.updateSuite = function(graph, pmf, data) {
 		$.ajax("/api/pmf", {
 			data: JSON.stringify({
 				pmf : pmf,
@@ -106,15 +102,9 @@
 		})
 	}
 
-	var d3getSuite = function(jsonUrl, callback) {
-		d3.json(jsonUrl, callback)
+	window.d3getSuite = function(jsonUrl, svg, callback) {
+		d3.json(jsonUrl, function(data) {
+			callback(data, svg)
+		})
 	}
-
-	var width = 300, height = 300
-
-	var svg = d3.select("body").append("svg")
-		.attr("width", width)
-		.attr("height", height)
-
-	d3getSuite("/api/pmf", d3createSuitePlot)
 })()
