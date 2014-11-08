@@ -23,10 +23,11 @@ class Cookie(tb.Suite):
 class Euro(tb.Suite):
 	def Likelihood(self, data, hypo):
 		x = hypo / 100.0
-		if data == 'H':
-			return x
-		else:
-			return 1-x
+		for datum in data:
+			if datum == 'H':
+				return x
+			else:
+				return 1-x
 
 def packaged(pmf):
 	return json.jsonify({ "pmf": {'x': pmf.d.keys(), 'y': pmf.d.values()} })
