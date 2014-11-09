@@ -11,7 +11,9 @@
 		// attributes of the plot
 
 		var graph = this
-
+		console.log("data")
+		console.log(data)
+		
 		graph.data = data
 		graph.svg = svg
 		graph.width = parseInt(svg.style("width"))
@@ -20,7 +22,7 @@
 		graph.scale = {}
 
 		graph.scale.x = d3.scale.linear()
-		.domain([_.min(data.x), _.max(data.x)])
+		.domain([0, data.x.length])
 		.range([0, graph.width])
 
 		graph.scale.y = d3.scale.linear()
@@ -61,34 +63,8 @@
 		return graph
 	}
 
-	window.d3createSuitePlot = function(pmf, svg) {
-		var pmf = pmf.pmf
-
-		window.bargraph = d3verticalBar(svg, pmf, {ydomain: [0, 1]})
-
-		d3.select("body").append("div")
-		.attr("class", "button heads")
-		.attr("data", "HHHHHHHHHH")
-		.on("click", function() {
-			var update = d3.select(this).attr("data")
-
-			updateSuite(bargraph, bargraph.data, update)
-		})
-
-		d3.select("body").append("div")
-		.attr("class", "button tails")
-		.attr("data", "TTTTTTTTTT")
-		.on("click", function() {
-			var update = d3.select(this).attr("data")
-
-			updateSuite(bargraph, bargraph.data, update)
-		})
-
-		return svg
-	}
-
-	window.updateSuite = function(graph, pmf, data) {
-		$.ajax("/api/pmf", {
+	window.updateSuite = function(graph, pmf, data, url) {
+		$.ajax(url, {
 			data: JSON.stringify({
 				pmf : pmf,
 				update: data
@@ -99,6 +75,17 @@
 			success: function(pmf) {
 				graph.update(pmf.pmf)
 			}
+		})
+	}
+
+	window.makeUpdateButton = function(plot, name, data, url) {
+		d3.select("body").append("div")
+		.attr("class", "button "+name)
+		.attr("data", data)
+		.on("click", function() {
+			var update = d3.select(this).attr("data")
+
+			updateSuite(plot, plot.data, update, url)
 		})
 	}
 

@@ -14,11 +14,18 @@ This works fine.
 """
 
 class Cookie(tb.Suite):
-    def Likelihood(self, data, hypo):
-        like = hypo[data] / hypo.Total()
-        if like:
-            hypo[data] -= 1
-        return like
+	def Likelihood(self, data, hypo):
+		like = hypo[data] / hypo.Total()
+		if like:
+			hypo[data] -= 1
+		return like
+
+class Dice(tb.Suite):
+	def Likelihood(self, data, hypo):
+		if data > hypo:
+			return 0
+
+		return 1.0/hypo
 
 class Euro(tb.Suite):
 	def Likelihood(self, data, hypo):
@@ -35,26 +42,45 @@ def packaged(pmf):
 def suiteupdate(request):
 	return dict(request['pmf']), request['update']
 
+def pmfFromResponse(res):
+	return tb.MakePmfFromDict(dict(zip(res['x'], res['y'])))
+
 @app.route("/")
-def hello():
+def index():
 	return render_template("index.html")
 
-@app.route("/api/pmf", methods=["GET", "POST"])
-def pmf():
+@app.route("/dice")
+def dices():
+	return render_template("dice.html")
+
+@app.route("/api/suite/euro", methods=["GET", "POST"])
+def euro():
 	if request.method == "GET":
-		pmf = tb.Pmf()
-		for i in range(1, 101):
-			pmf.Set(i, 1)
-		pmf.Normalize()
+		pmf = tb.MakePmfFromList(list(range(1, 101)))
 
 		return packaged(pmf)
 	else:
 		pmf, update = suiteupdate(request.get_json())
 
-		euro = Euro(tb.MakePmfFromDict(dict(zip(pmf['x'], pmf['y']))))
+		euro = Euro(pmfFromResponse(pmf))
 		euro.Update(update)
 
 		return packaged(euro)
+
+@app.route("/api/suite/dice", methods=["GET", "POST"])
+def dice():
+	if request.method == "GET":
+		pmf = tb.MakePmfFromList([4, 6, 8, 12, 20])
+
+		return packaged(pmf)
+	else:
+		pmf, update = suiteupdate(request.get_json())
+		update = int(update)
+
+		dice = Dice(pmfFromResponse(pmf))
+		dice.Update(update)
+
+		return packaged(dice)
 
 if __name__ == "__main__":
 	app.run(debug=True)
