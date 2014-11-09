@@ -37,13 +37,13 @@ class Euro(tb.Suite):
 				return 1-x
 
 def packaged(pmf):
-	return json.jsonify({ "pmf": {'x': pmf.d.keys(), 'y': pmf.d.values()} })
+	return json.jsonify({ "pmf": sorted(pmf.d.items()) })
 
 def suiteupdate(request):
 	return dict(request['pmf']), request['update']
 
 def pmfFromResponse(res):
-	return tb.MakePmfFromDict(dict(zip(res['x'], res['y'])))
+	return tb.MakePmfFromItems(res)
 
 @app.route("/")
 def index():
@@ -72,7 +72,10 @@ def dice():
 	if request.method == "GET":
 		pmf = tb.MakePmfFromList([4, 6, 8, 12, 20])
 
-		return packaged(pmf)
+		package = packaged(pmf)
+		print "Sending this out"
+		print package
+		return package
 	else:
 		pmf, update = suiteupdate(request.get_json())
 		update = int(update)

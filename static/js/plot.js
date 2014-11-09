@@ -1,4 +1,10 @@
 (function() {
+	window.zip = function(arrays) {
+		return arrays[0].map(function(_,i){
+			return arrays.map(function(array){return array[i]})
+		});
+	}
+
 	window.svgTranslate = function(left, top) {
 		return "translate(" + left + "," + top + ")"
 	}
@@ -11,8 +17,6 @@
 		// attributes of the plot
 
 		var graph = this
-		console.log("data")
-		console.log(data)
 		
 		graph.data = data
 		graph.svg = svg
@@ -22,39 +26,40 @@
 		graph.scale = {}
 
 		graph.scale.x = d3.scale.linear()
-		.domain([0, data.x.length])
+		.domain([0, graph.data.length])
 		.range([0, graph.width])
 
 		graph.scale.y = d3.scale.linear()
-		.domain(options.ydomain || [0, _.max(data.y)])
+		.domain(options.ydomain)
 		.range([graph.height, 0])
 
 		// actually do the plotting
 
 		graph.svg.selectAll("rect")
-		.data(graph.data.y)
+		.data(graph.data)
 		.enter().append("rect")
 		.attr("x", function(d, i) {
 			return graph.scale.x(i)
 		})
 		.attr("y", function(d) {
-			return graph.scale.y(d)
+			return graph.scale.y(d[1])
 		})
 		.attr("height", function(d) {
-			return graph.height - graph.scale.y(d)
+			return graph.height - graph.scale.y(d[1])
 		})
-		.attr("width", graph.width/graph.data.y.length)
+		.attr("width", graph.width/graph.data.length)
 		.attr("class", "bar")
 
 		graph.update = function(data) {
+			console.log(data)
 			graph.svg.selectAll("rect")
-			.data(data.y)
+			.data(data)
 			.transition()
 			.attr("y", function(d) {
-				return graph.scale.y(d)
+				return graph.scale.y(d[1])
 			})
 			.attr("height", function(d) {
-				return height - graph.scale.y(d)
+				return height - graph.scale.y(d[1])
 			})
 
 			graph.data = data
