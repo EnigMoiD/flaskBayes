@@ -2,7 +2,11 @@
 	window.d3createEuroPlot = function(pmf, svg) {
 		var pmf = pmf.pmf
 
-		window.bargraph = d3verticalBar(svg, pmf, {ydomain: [0, 1]})
+		window.bargraph = d3verticalBar(svg, pmf, {
+			ydomain: [0, 1],
+			xlabel: "Coin Balance",
+			ylabel: "Probability"
+		})
 
 		makeUpdateButton(bargraph, "heads", "HHHHHHHHHH", "/api/suite/euro")
 

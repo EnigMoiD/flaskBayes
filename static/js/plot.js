@@ -35,6 +35,7 @@
 
 		// actually do the plotting
 
+		graph.svg.attr("class", "graph")
 		graph.svg.selectAll("rect")
 		.data(graph.data)
 		.enter().append("rect")
@@ -49,6 +50,21 @@
 		})
 		.attr("width", graph.width/graph.data.length)
 		.attr("class", "bar")
+
+		graph.svg.append("text")
+		.attr("class", "label x")
+	    .attr("text-anchor", "end")
+	    .attr("x", graph.width)
+	    .attr("y", graph.height+20+'px')
+	    .text(options.xlabel)
+
+	    graph.svg.append("text")
+	    .attr("class", "label y")
+	    .attr("text-anchor", "end")
+	    .attr("y", "-1em")
+	    .attr("dy", ".75em")
+	    .attr("transform", "rotate(-90)")
+	    .text(options.ylabel);
 
 		graph.update = function(data) {
 			graph.svg.selectAll("rect")
