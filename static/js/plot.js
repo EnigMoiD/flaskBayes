@@ -51,7 +51,6 @@
 		.attr("class", "bar")
 
 		graph.update = function(data) {
-			console.log(data)
 			graph.svg.selectAll("rect")
 			.data(data)
 			.transition()
