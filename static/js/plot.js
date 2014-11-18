@@ -55,16 +55,33 @@
 		.attr("class", "label x")
 	    .attr("text-anchor", "end")
 	    .attr("x", graph.width)
-	    .attr("y", graph.height+20+'px')
+	    .attr("y", graph.height+40+'px')
 	    .text(options.xlabel)
 
 	    graph.svg.append("text")
 	    .attr("class", "label y")
 	    .attr("text-anchor", "end")
-	    .attr("y", "-1em")
+	    .attr("y", "-3em")
 	    .attr("dy", ".75em")
 	    .attr("transform", "rotate(-90)")
-	    .text(options.ylabel);
+	    .text(options.ylabel)
+
+	    var xAxis = d3.svg.axis()
+	    .scale(graph.scale.x)
+	    .orient("bottom")
+
+	    graph.svg.append("g")
+	    .attr("class", "axis")
+	    .attr("transform", "translate(0,"+graph.height+")")
+	    .call(xAxis)
+
+	    var yAxis = d3.svg.axis()
+	    .scale(graph.scale.y)
+	    .orient("left")
+
+	    graph.svg.append("g")
+	    .attr("class", "axis")
+	    .call(yAxis)
 
 		graph.update = function(data) {
 			graph.svg.selectAll("rect")
