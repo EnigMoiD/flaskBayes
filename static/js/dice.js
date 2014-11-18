@@ -8,11 +8,9 @@
 			ylabel: "Probability"
 		})
 
-		makeUpdateButton(bargraph, "four", 4, "/api/suite/dice")
-		makeUpdateButton(bargraph, "six", 6, "/api/suite/dice")
-		makeUpdateButton(bargraph, "eight", 8, "/api/suite/dice")
-		makeUpdateButton(bargraph, "twelve", 12, "/api/suite/dice")
-		makeUpdateButton(bargraph, "twenty", 20, "/api/suite/dice")
+		for (var i = 0; i < 20; i++) {
+			makeUpdateButton(bargraph, "num"+(i+1), i+1, "/api/suite/dice")
+		}
 
 		return svg
 	}
