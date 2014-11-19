@@ -12,6 +12,26 @@ Right now it's an object:
 
 This works fine.
 """
+ 
+class Bandit(tb.Suite):
+    def __init__(self, label=None):
+        self.p = random() # random prob of success
+        pmf = tb.MakePmfFromList(list(range(101)))
+        tb.Suite.__init__(self, pmf, label=label)
+
+    def setlabel(self, label):
+        self.label = label
+
+    def Likelihood(self, data, hypo):
+        if data == 1:
+            like = hypo/100.0
+        else:
+            like = 1-hypo/100.0
+
+        return like 
+
+    def pull(self):
+        return random() < self.p
 
 class Cookie(tb.Suite):
 	def Likelihood(self, data, hypo):
@@ -37,7 +57,13 @@ class Euro(tb.Suite):
 				return 1-x
 
 def packaged(pmf):
-	return json.jsonify({ "pmf": sorted(pmf.d.items()) })
+	return sorted(pmf.d.items())
+
+def packagedpmf(pmf):
+	return json.jsonify({ "pmf": packaged(pmf) })
+
+def packagedlist(pmflist):
+	return json.jsonify({ "pmfs": [ packaged(pmf) for pmf in pmflist ]})
 
 def suiteupdate(request):
 	return dict(request['pmf']), request['update']
@@ -58,23 +84,21 @@ def euro():
 	if request.method == "GET":
 		pmf = tb.MakePmfFromList(list(range(1, 101)))
 
-		return packaged(pmf)
+		return packagedpmf(pmf)
 	else:
 		pmf, update = suiteupdate(request.get_json())
 
 		euro = Euro(pmfFromResponse(pmf))
 		euro.Update(update)
 
-		return packaged(euro)
+		return packagedpmf(euro)
 
 @app.route("/api/suite/dice", methods=["GET", "POST"])
 def dice():
 	if request.method == "GET":
 		pmf = tb.MakePmfFromList([4, 6, 8, 12, 20])
 
-		package = packaged(pmf)
-		print "Sending this out"
-		print package
+		package = packagedpmf(pmf)
 		return package
 	else:
 		pmf, update = suiteupdate(request.get_json())
@@ -83,7 +107,27 @@ def dice():
 		dice = Dice(pmfFromResponse(pmf))
 		dice.Update(update)
 
-		return packaged(dice)
+		return packagedpmf(dice)
+
+# the bandit example
+# the frontend holds the state for all the bandits
+# 	so it needs to receive a bunch at once
+# 	for now, this just means 10
+
+@app.route("/api/suite/bandit", methods=["GET", "POST"])
+def bandit():
+	if request.method == "GET":
+		pmfs = [tb.MakePmfFromList(list(range(1, 101))) for i in range(10)]
+
+		package = packagedlist(pmfs)
+		return package
+	else:
+		print request.get_json()	
+
+		# dice = Dice(pmfFromResponse(pmf))
+		# dice.Update(update)
+
+		# return packagedpmf(dice)
 
 if __name__ == "__main__":
 	app.run(debug=True)
