@@ -143,12 +143,10 @@
 		.attr("data", data)
 		.on("click", function() {
 			var update = d3.select(this).attr("data")
-			update = {
-				"update": update,
-				"data": options.data[data]
-			}
-			updateSuite(plot, {data: options.multipmfs? plot.data[data] : plot.data[0], index: options.multipmfs? data : null}, update, url)
-
+			updateSuite(plot, {
+				data: options.multipmfs? plot.data[options.index] : plot.data[0],
+				index: options.multipmfs? options.index : null
+			},update, url)
 		})
 	}
 

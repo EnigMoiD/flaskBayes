@@ -73,9 +73,6 @@ def banditpackage(bandits):
 def suiteupdate(request):
 	return dict(request['pmf']), request['update']
 
-def banditupdate(request):
-	return dict(request['pmf']), request['update']['update'], request['update']['data']
-
 def pmffromresponse(res):
 	return tb.MakePmfFromItems(res)
 
@@ -132,18 +129,11 @@ def bandit():
 		bandits = [Bandit(label='Slot ' + str(i)) for i in range(10)]
 
 		package = banditpackage(bandits)
-		print "BANDITS========================"
-		print package
-		print "STIDNAB========================"
 		return package
 	else:
-		print "POST-----------------"
-		print request.get_json()
-		print "TSOP================="
+		pmf, prob = suiteupdate(request.get_json())
 
-		pmf, update, prob = banditupdate(request.get_json())
-
-		bandit = Bandit(pmf, prob)
+		bandit = Bandit(pmf, float(prob))
 		for i in range(50):
 			bandit.Update(bandit.pull())
 

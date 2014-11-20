@@ -33,7 +33,11 @@
 		})
 
 		for (var i = 0; i < 10; i++) {
-			makeUpdateButton(bargraph, "num"+i, i, "/api/suite/bandit", {data: pmfs.probs, multipmfs: true})
+			makeUpdateButton(bargraph, "num"+i, pmfs.probs[i], "/api/suite/bandit", {
+				data: pmfs.probs,
+				multipmfs: true,
+				index: i
+			})
 		}
 
 		return svg
