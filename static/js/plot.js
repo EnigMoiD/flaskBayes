@@ -10,12 +10,20 @@
 	}
 
 	window.d3verticalBar = function(svg, data, options) {
-		// assumes linear scale
-		// graph data is
-		// [[x1, y1], [x2, y2], ...]
-		// this returns a graph object
-		// options can contain things like scale, style
-		// attributes of the plot
+		/* 
+			assumes linear scale
+			graph data is
+			[[x1, y1], [x2, y2], ...]
+			this returns a graph object
+			options can contain things like scale, style
+			options = {
+				ydomain: [ymin, ymax],
+				xlabel: xlabel,
+				ylabel: ylabel,
+				colors: [color0, color1, ...]
+			}
+			attributes of the plot
+		*/
 
 		var graph = this
 		
@@ -50,6 +58,8 @@
 			.attr("height", function(d) {
 				return graph.height - graph.scale.y(d[1])
 			})
+			.attr("fill", options.colors[index])
+			.attr("fill-opacity", options.opacities[index])
 			.attr("width", graph.width/series.length)
 			.attr("class", "bar")
 			.attr("series", index)

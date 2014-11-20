@@ -3,9 +3,33 @@
 		var pmfarray = pmfs.pmfs
 
 		window.bargraph = d3verticalBar(svg, pmfarray, {
-			ydomain: [0, 1],
+			ydomain: [0, .1],
 			xlabel: "Bandit",
-			ylabel: "Probability"
+			ylabel: "Probability",
+			colors: [
+				"rgb(80, 160, 255",
+				"rgb(80, 160, 255",
+				"rgb(80, 160, 255",
+				"rgb(80, 160, 255",
+				"rgb(80, 160, 255",
+				"rgb(80, 160, 255",
+				"rgb(80, 160, 255",
+				"rgb(80, 160, 255",
+				"rgb(80, 160, 255",
+				"rgb(80, 160, 255",
+			],
+			opacities: [
+				0.2,
+				0.2,
+				0.2,
+				0.2,
+				0.2,
+				0.2,
+				0.2,
+				0.2,
+				0.2,
+				0.2,
+			]
 		})
 
 		for (var i = 0; i < 10; i++) {
