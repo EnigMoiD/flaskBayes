@@ -125,7 +125,7 @@
 		return graph
 	}
 
-	window.updateSuite = function(graph, data, update, url) {
+	window.updateSuite = function(graph, data, update, url, callback) {
 		$.ajax(url, {
 			data: JSON.stringify({
 				pmf : data.data,
@@ -136,6 +136,8 @@
 			contentType: "application/json",
 			success: function(res) {
 				graph.update([res.pmf], data.index)
+
+				if (callback) callback()
 			}
 		})
 	}
@@ -149,7 +151,7 @@
 			updateSuite(plot, {
 				data: options.multipmfs? plot.data[options.index] : plot.data[0],
 				index: options.multipmfs? options.index : null
-			},update, url)
+			}, update, url)
 		})
 		.append("div")
 		.attr("class", "text")

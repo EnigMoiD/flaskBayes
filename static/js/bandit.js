@@ -20,6 +20,30 @@
 			})
 		}
 
+		var getMeans = function(bandits) {
+			$.ajax("/api/suite/means", {
+				data: JSON.stringify({
+					pmfs: bandits
+				}),
+				type: "POST",
+				dataType: "json",
+				contentType: "application/json",
+				success: function(means) {
+					means = means.means
+					var bestBanditIndex = _.indexOf(means, _.max(means))
+					var bestBandit = bandits[bestBanditIndex]
+					updateSuite(bargraph, {
+						data: bestBandit,
+						index: bestBanditIndex
+					}, pmfs.probs[bestBanditIndex], "/api/suite/bandit")
+				}
+			})
+		}
+
+		setInterval(function() {
+			getMeans(pmfarray)
+		}, 10)
+
 		return svg
 	}
 
@@ -30,4 +54,5 @@
 		.attr("height", height)
 
 	d3getSuite("/api/suite/bandit", svg, d3createBanditPlot)
+
 })()

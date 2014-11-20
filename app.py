@@ -19,6 +19,7 @@ class Bandit(tb.Suite):
     def __init__(self, pmf=None, p=None, label=None):
         self.p = p if p else random()
         if not pmf: pmf = tb.MakePmfFromList(list(range(101)))
+
         tb.Suite.__init__(self, pmf, label=label)
 
     def setlabel(self, label):
@@ -87,6 +88,18 @@ def dices():
 @app.route("/bandit")
 def banditses():
 	return render_template("bandit.html")
+
+@app.route("/api/suite/mean", methods=["POST"])
+def mean():
+	pmf = pmffromresponse(request.get_json()["pmf"])
+	return json.jsonify({ mean: pmf.Mean() })
+
+@app.route("/api/suite/means", methods=["POST"])
+def means():
+	req = request.get_json()["pmfs"]
+	pmfs = [tb.MakePmfFromList(pmf) for pmf in req]
+
+	return json.jsonify({ "means": [pmf.Mean() for pmf in pmfs] })
 
 @app.route("/api/suite/euro", methods=["GET", "POST"])
 def euro():
