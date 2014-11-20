@@ -106,6 +106,10 @@
 		// optionally takes an index argument
 		// if the plot has multiple series
 		graph.update = function(data, index) {
+			console.log("data")
+			console.log(data)
+			console.log("index")
+			console.log(index)
 			_.each(data, function(series) {
 				graph.svg
 				.selectAll("[series='"+index+"']")
@@ -150,12 +154,11 @@
 			var update = d3.select(this).attr("data")
 			updateSuite(plot, {
 				data: options.multipmfs? plot.data[options.index] : plot.data[0],
-				index: options.multipmfs? options.index : null
+				index: options.multipmfs? options.index : 0
 			}, update, url)
 		})
 		.append("div")
 		.attr("class", "text")
-		.text(data.toPrecision(2))
 	}
 
 	window.d3getSuite = function(jsonUrl, svg, callback) {

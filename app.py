@@ -71,10 +71,10 @@ def banditpackage(bandits):
 		"probs": [ bandit.p for bandit in bandits ]
 	})
 
-def suiteupdate(request):
+def unpacksuiteupdate(request):
 	return dict(request['pmf']), request['update']
 
-def pmffromresponse(res):
+def pmffromrequest(res):
 	return tb.MakePmfFromItems(res)
 
 @app.route("/")
@@ -91,7 +91,7 @@ def banditses():
 
 @app.route("/api/suite/mean", methods=["POST"])
 def mean():
-	pmf = pmffromresponse(request.get_json()["pmf"])
+	pmf = pmffromrequest(request.get_json()["pmf"])
 	return json.jsonify({ mean: pmf.Mean() })
 
 @app.route("/api/suite/means", methods=["POST"])
@@ -108,9 +108,9 @@ def euro():
 
 		return packagedpmf(pmf)
 	else:
-		pmf, update = suiteupdate(request.get_json())
+		pmf, update = unpacksuiteupdate(request.get_json())
 
-		euro = Euro(pmffromresponse(pmf))
+		euro = Euro(pmffromrequest(pmf))
 		euro.Update(update)
 
 		return packagedpmf(euro)
@@ -120,13 +120,12 @@ def dice():
 	if request.method == "GET":
 		pmf = tb.MakePmfFromList([4, 6, 8, 12, 20])
 
-		package = packagedpmf(pmf)
-		return package
+		return packagedpmf(pmf)
 	else:
-		pmf, update = suiteupdate(request.get_json())
+		pmf, update = unpacksuiteupdate(request.get_json())
 		update = int(update)
 
-		dice = Dice(pmffromresponse(pmf))
+		dice = Dice(pmffromrequest(pmf))
 		dice.Update(update)
 
 		return packagedpmf(dice)
@@ -141,14 +140,12 @@ def bandit():
 	if request.method == "GET":
 		bandits = [Bandit(label='Slot ' + str(i)) for i in range(10)]
 
-		package = banditpackage(bandits)
-		return package
+		return banditpackage(bandits)
 	else:
-		pmf, prob = suiteupdate(request.get_json())
+		pmf, prob = unpacksuiteupdate(request.get_json())
 
 		bandit = Bandit(pmf, float(prob))
-		for i in range(10):
-			bandit.Update(bandit.pull())
+		bandit.Update(bandit.pull())
 
 		return packagedpmf(bandit)
 

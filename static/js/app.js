@@ -8,9 +8,9 @@
 			ylabel: "Probability"
 		})
 
-		makeUpdateButton(bargraph, "heads", "HHHHHHHHHH", "/api/suite/euro")
+		makeUpdateButton(bargraph, "heads", "HHHHHHHHHH", "/api/suite/euro", {})
 
-		makeUpdateButton(bargraph, "tails", "TTTTTTTTTT", "/api/suite/euro")
+		makeUpdateButton(bargraph, "tails", "TTTTTTTTTT", "/api/suite/euro", {})
 
 		return svg
 	}

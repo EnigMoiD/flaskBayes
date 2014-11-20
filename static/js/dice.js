@@ -9,7 +9,7 @@
 		})
 
 		for (var i = 0; i < 20; i++) {
-			makeUpdateButton(bargraph, "num"+(i+1), i+1, "/api/suite/dice")
+			makeUpdateButton(bargraph, "num"+(i+1), i+1, "/api/suite/dice", {})
 		}
 
 		return svg
