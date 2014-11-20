@@ -20,7 +20,10 @@
 				ydomain: [ymin, ymax],
 				xlabel: xlabel,
 				ylabel: ylabel,
+				color: color,
+				opacity: opacity,
 				colors: [color0, color1, ...]
+				opacities: [opacity0, opacity1, ...]
 			}
 			attributes of the plot
 		*/
@@ -58,8 +61,8 @@
 			.attr("height", function(d) {
 				return graph.height - graph.scale.y(d[1])
 			})
-			.attr("fill", options.colors[index])
-			.attr("fill-opacity", options.opacities[index])
+			.attr("fill", options.color)
+			.attr("fill-opacity", options.opacity)
 			.attr("width", graph.width/series.length)
 			.attr("class", "bar")
 			.attr("series", index)
@@ -148,6 +151,9 @@
 				index: options.multipmfs? options.index : null
 			},update, url)
 		})
+		.append("div")
+		.attr("class", "text")
+		.text(data.toPrecision(2))
 	}
 
 	window.d3getSuite = function(jsonUrl, svg, callback) {

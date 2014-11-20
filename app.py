@@ -134,7 +134,7 @@ def bandit():
 		pmf, prob = suiteupdate(request.get_json())
 
 		bandit = Bandit(pmf, float(prob))
-		for i in range(50):
+		for i in range(10):
 			bandit.Update(bandit.pull())
 
 		return packagedpmf(bandit)
