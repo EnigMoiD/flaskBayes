@@ -12,7 +12,7 @@
 	window.d3verticalBar = function(svg, data, options) {
 		// assumes linear scale
 		// graph data is
-		// [{x:[], y:[]}]
+		// [[x1, y1], [x2, y2], ...]
 		// this returns a graph object
 		// options can contain things like scale, style
 		// attributes of the plot
@@ -37,8 +37,8 @@
 		graph.svg.attr("class", "graph")
 
 		// actually do the plotting
-		var plotSeries = function(series) {
-			graph.svg.selectAll("rect")
+		var plotSeries = function(series, index) {
+			graph.svg.append("g").selectAll("rect")
 			.data(series)
 			.enter().append("rect")
 			.attr("x", function(d, i) {
@@ -52,6 +52,7 @@
 			})
 			.attr("width", graph.width/series.length)
 			.attr("class", "bar")
+			.attr("series", index)
 		}
 
 		_.each(graph.data, plotSeries)
@@ -88,9 +89,13 @@
 	    .attr("class", "axis")
 	    .call(yAxis)
 
-		graph.update = function(data) {
-			_.each(data, function(series) {	
-				graph.svg.selectAll("rect")
+		// updates one series at a time
+		// optionally takes an index argument
+		// if the plot has multiple series
+		graph.update = function(data, index) {
+			_.each(data, function(series) {
+				graph.svg
+				.selectAll("[series='"+index+"']")
 				.data(series)
 				.transition()
 				.attr("y", function(d) {
@@ -107,29 +112,33 @@
 		return graph
 	}
 
-	window.updateSuite = function(graph, pmf, data, url) {
+	window.updateSuite = function(graph, data, update, url) {
 		$.ajax(url, {
 			data: JSON.stringify({
-				pmf : pmf,
-				update: data
+				pmf : data.data,
+				update: update
 			}),
 			type: "POST",
 			dataType: "json",
 			contentType: "application/json",
-			success: function(pmf) {
-				graph.update([pmf.pmf])
+			success: function(res) {
+				graph.update([res.pmf], data.index)
 			}
 		})
 	}
 
-	window.makeUpdateButton = function(plot, name, data, url) {
+	window.makeUpdateButton = function(plot, name, data, url, options) {
 		d3.select("body").append("div")
 		.attr("class", "button "+name)
 		.attr("data", data)
 		.on("click", function() {
 			var update = d3.select(this).attr("data")
+			update = {
+				"update": update,
+				"data": options.data[data]
+			}
+			updateSuite(plot, {data:plot.data[0], index: options.multipmfs? data : null}, update, url)
 
-			updateSuite(plot, plot.data[0], update, url)
 		})
 	}
 

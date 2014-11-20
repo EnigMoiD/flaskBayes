@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, json
 import thinkbayes2 as tb
+from random import random
 
 app = Flask(__name__)
 print(__name__)
@@ -14,9 +15,10 @@ This works fine.
 """
  
 class Bandit(tb.Suite):
-    def __init__(self, label=None):
-        self.p = random() # random prob of success
-        pmf = tb.MakePmfFromList(list(range(101)))
+    # init a bandit with a pmf and a probability of success
+    def __init__(self, pmf=None, p=None, label=None):
+        self.p = p if p else random()
+        if not pmf: pmf = tb.MakePmfFromList(list(range(101)))
         tb.Suite.__init__(self, pmf, label=label)
 
     def setlabel(self, label):
@@ -62,13 +64,19 @@ def packaged(pmf):
 def packagedpmf(pmf):
 	return json.jsonify({ "pmf": packaged(pmf) })
 
-def packagedlist(pmflist):
-	return json.jsonify({ "pmfs": [ packaged(pmf) for pmf in pmflist ]})
+def banditpackage(bandits):
+	return json.jsonify({
+		"pmfs": [ packaged(bandit) for bandit in bandits ],
+		"probs": [ bandit.p for bandit in bandits ]
+	})
 
 def suiteupdate(request):
 	return dict(request['pmf']), request['update']
 
-def pmfFromResponse(res):
+def banditupdate(request):
+	return dict(request['pmf']), request['update']['update'], request['update']['data']
+
+def pmffromresponse(res):
 	return tb.MakePmfFromItems(res)
 
 @app.route("/")
@@ -79,6 +87,10 @@ def index():
 def dices():
 	return render_template("dice.html")
 
+@app.route("/bandit")
+def banditses():
+	return render_template("bandit.html")
+
 @app.route("/api/suite/euro", methods=["GET", "POST"])
 def euro():
 	if request.method == "GET":
@@ -88,7 +100,7 @@ def euro():
 	else:
 		pmf, update = suiteupdate(request.get_json())
 
-		euro = Euro(pmfFromResponse(pmf))
+		euro = Euro(pmffromresponse(pmf))
 		euro.Update(update)
 
 		return packagedpmf(euro)
@@ -104,7 +116,7 @@ def dice():
 		pmf, update = suiteupdate(request.get_json())
 		update = int(update)
 
-		dice = Dice(pmfFromResponse(pmf))
+		dice = Dice(pmffromresponse(pmf))
 		dice.Update(update)
 
 		return packagedpmf(dice)
@@ -117,17 +129,24 @@ def dice():
 @app.route("/api/suite/bandit", methods=["GET", "POST"])
 def bandit():
 	if request.method == "GET":
-		pmfs = [tb.MakePmfFromList(list(range(1, 101))) for i in range(10)]
+		bandits = [Bandit(label='Slot ' + str(i)) for i in range(10)]
 
-		package = packagedlist(pmfs)
+		package = banditpackage(bandits)
+		print "BANDITS========================"
+		print package
+		print "STIDNAB========================"
 		return package
 	else:
-		print request.get_json()	
+		print "POST-----------------"
+		print request.get_json()
+		print "TSOP================="
 
-		# dice = Dice(pmfFromResponse(pmf))
-		# dice.Update(update)
+		pmf, update, prob = banditupdate(request.get_json())
 
-		# return packagedpmf(dice)
+		bandit = Bandit(pmf, prob)
+		bandit.Update(bandit.pull())
+
+		return packagedpmf(bandit)
 
 if __name__ == "__main__":
 	app.run(debug=True)
