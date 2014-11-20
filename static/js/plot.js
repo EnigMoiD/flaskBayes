@@ -116,7 +116,7 @@
 				})
 			})
 
-			graph.data = data
+			graph.data[index] = data[0]
 		}
 
 		return graph
@@ -147,7 +147,7 @@
 				"update": update,
 				"data": options.data[data]
 			}
-			updateSuite(plot, {data:plot.data[0], index: options.multipmfs? data : null}, update, url)
+			updateSuite(plot, {data: options.multipmfs? plot.data[data] : plot.data[0], index: options.multipmfs? data : null}, update, url)
 
 		})
 	}

@@ -144,7 +144,8 @@ def bandit():
 		pmf, update, prob = banditupdate(request.get_json())
 
 		bandit = Bandit(pmf, prob)
-		bandit.Update(bandit.pull())
+		for i in range(50):
+			bandit.Update(bandit.pull())
 
 		return packagedpmf(bandit)
 
