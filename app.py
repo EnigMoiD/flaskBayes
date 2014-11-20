@@ -74,9 +74,6 @@ def banditpackage(bandits):
 def unpacksuiteupdate(request):
 	return dict(request['pmf']), request['update']
 
-def pmffromrequest(res):
-	return tb.MakePmfFromItems(res)
-
 @app.route("/")
 def index():
 	return render_template("index.html")
@@ -110,7 +107,7 @@ def euro():
 	else:
 		pmf, update = unpacksuiteupdate(request.get_json())
 
-		euro = Euro(pmffromrequest(pmf))
+		euro = Euro(pmf)
 		euro.Update(update)
 
 		return packagedpmf(euro)
@@ -125,7 +122,7 @@ def dice():
 		pmf, update = unpacksuiteupdate(request.get_json())
 		update = int(update)
 
-		dice = Dice(pmffromrequest(pmf))
+		dice = Dice(pmf)
 		dice.Update(update)
 
 		return packagedpmf(dice)
