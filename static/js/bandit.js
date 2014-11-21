@@ -46,7 +46,7 @@
 
 		setInterval(function() {
 			getMeans(pmfarray)
-		}, 500)
+		}, 50)
 
 		return svg
 	}
