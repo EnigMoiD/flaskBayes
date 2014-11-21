@@ -78,6 +78,10 @@ def unpacksuiteupdate(request):
 def index():
 	return render_template("index.html")
 
+@app.route("/euro")
+def euros():
+	return render_template("euro.html")
+
 @app.route("/dice")
 def dices():
 	return render_template("dice.html")

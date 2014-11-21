@@ -8,8 +8,8 @@
 			xlabel: "Bandit",
 			ylabel: "Probability",
 			color: "rgb(80, 160, 255)",
-			opacity: 0.4,
-			colors: [],
+			opacity: 0.6,
+			colors: _(10).times(function() {return randomColor()}),
 			opacities: []
 		})
 
@@ -43,7 +43,7 @@
 
 		setInterval(function() {
 			getMeans(pmfarray)
-		}, 100)
+		}, 500)
 
 		return svg
 	}

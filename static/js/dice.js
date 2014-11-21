@@ -6,7 +6,9 @@
 			ydomain: [0, 1],
 			title: "Rolling Dice",
 			xlabel: "Believed Sides of Dice",
-			ylabel: "Probability"
+			ylabel: "Probability",
+			colors: _(5).times(function() {return randomColor()}),
+			opacities: []
 		})
 
 		for (var i = 0; i < 20; i++) {

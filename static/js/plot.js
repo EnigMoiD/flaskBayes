@@ -62,7 +62,7 @@
 			.attr("height", function(d) {
 				return graph.height - graph.scale.y(d[1])
 			})
-			.attr("fill", options.color)
+			.attr("fill", options.colors[index])
 			.attr("fill-opacity", options.opacity)
 			.attr("width", graph.width/series.length)
 			.attr("class", "bar")
