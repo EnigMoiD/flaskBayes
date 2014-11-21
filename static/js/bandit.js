@@ -4,6 +4,7 @@
 
 		window.bargraph = d3verticalBar(svg, pmfarray, {
 			ydomain: [0, 1],
+			title: "Multi-Armed Bandit",
 			xlabel: "Bandit",
 			ylabel: "Probability",
 			color: "rgb(80, 160, 255)",

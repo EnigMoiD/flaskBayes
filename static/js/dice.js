@@ -4,7 +4,8 @@
 
 		window.bargraph = d3verticalBar(svg, [pmf], {
 			ydomain: [0, 1],
-			xlabel: "Expected Sides of Die",
+			title: "Rolling Dice",
+			xlabel: "Believed Sides of Dice",
 			ylabel: "Probability"
 		})
 

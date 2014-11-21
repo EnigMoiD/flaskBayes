@@ -20,6 +20,7 @@
 				ydomain: [ymin, ymax],
 				xlabel: xlabel,
 				ylabel: ylabel,
+				title: title,
 				color: color,
 				opacity: opacity,
 				colors: [color0, color1, ...]
@@ -71,17 +72,25 @@
 		_.each(graph.data, plotSeries)
 
 		graph.svg.append("text")
+		.attr("class", "label title")
+	    .attr("text-anchor", "middle")
+	    .attr("x", graph.width/2)
+	    .attr("y", -20)
+	    .text(options.title)
+
+		graph.svg.append("text")
 		.attr("class", "label x")
-	    .attr("text-anchor", "end")
-	    .attr("x", graph.width)
-	    .attr("y", graph.height+40+'px')
+	    .attr("text-anchor", "middle")
+	    .attr("x", graph.width/2)
+	    .attr("y", graph.height+40)
 	    .text(options.xlabel)
 
 	    graph.svg.append("text")
 	    .attr("class", "label y")
-	    .attr("text-anchor", "end")
-	    .attr("y", "-3em")
+	    .attr("text-anchor", "middle")
+	    .attr("y", "-3.5em")
 	    .attr("dy", ".75em")
+	    .attr("x", -graph.height/2)
 	    .attr("transform", "rotate(-90)")
 	    .text(options.ylabel)
 
@@ -106,10 +115,6 @@
 		// optionally takes an index argument
 		// if the plot has multiple series
 		graph.update = function(data, index) {
-			console.log("data")
-			console.log(data)
-			console.log("index")
-			console.log(index)
 			_.each(data, function(series) {
 				graph.svg
 				.selectAll("[series='"+index+"']")
