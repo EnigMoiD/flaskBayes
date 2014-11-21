@@ -154,7 +154,7 @@
 	window.makeUpdateButton = function(plot, name, data, url, options) {
 		d3.select("body").append("div")
 		.attr("class", "button "+name)
-		.attr("data", data)
+		.attr("data", data.data)
 		.on("click", function() {
 			var update = d3.select(this).attr("data")
 			updateSuite(plot, {
@@ -162,8 +162,10 @@
 				index: options.multipmfs? options.index : 0
 			}, update, url)
 		})
+		.style("background-color", options.color)
 		.append("div")
 		.attr("class", "text")
+		.text(data.display)
 	}
 
 	window.d3getSuite = function(jsonUrl, svg, callback) {

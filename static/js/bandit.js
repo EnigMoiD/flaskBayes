@@ -14,7 +14,10 @@
 		})
 
 		for (var i = 0; i < 10; i++) {
-			makeUpdateButton(bargraph, "num"+i, pmfs.probs[i], "/api/suite/bandit", {
+			makeUpdateButton(bargraph, "num"+i+" hidden", {
+				data:pmfs.probs[i],
+				display:""
+			}, "/api/suite/bandit", {
 				data: pmfs.probs,
 				multipmfs: true,
 				index: i

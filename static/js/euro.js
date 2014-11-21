@@ -10,19 +10,23 @@
 			ylabel: "Probability"
 		})
 
-		makeUpdateButton(bargraph, "heads", "HHHHHHHHHH", "/api/suite/euro", {})
-
-		makeUpdateButton(bargraph, "tails", "TTTTTTTTTT", "/api/suite/euro", {})
+		makeUpdateButton(bargraph, "tails", {
+			data:"TTTTTTTTTT",
+			display:"Tails"
+		}, "/api/suite/euro", {color: randomColor({luminosity: "dark"})})
+		makeUpdateButton(bargraph, "heads", {
+			data:"HHHHHHHHHH",
+			display:"Heads"
+		}, "/api/suite/euro", {color: randomColor({luminosity: "dark"})})
 
 		return svg
 	}
 
-	var width = 300, height = 300
+	var width = 500, height = 400
 
 	var svg = d3.select("body").append("svg")
 		.attr("width", width)
 		.attr("height", height)
 
 	d3getSuite("/api/suite/euro", svg, d3createEuroPlot)
-
 })()

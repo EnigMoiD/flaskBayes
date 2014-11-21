@@ -12,18 +12,20 @@
 		})
 
 		for (var i = 0; i < 20; i++) {
-			makeUpdateButton(bargraph, "num"+(i+1), i+1, "/api/suite/dice", {})
+			makeUpdateButton(bargraph, "dice num"+(i+1), {
+				data:i+1,
+				display:i+1
+			}, "/api/suite/dice", {color: randomColor({luminosity: "dark"})})
 		}
 
 		return svg
 	}
 
-	var width = 300, height = 300
+	var width = 500, height = 400
 
 	var svg = d3.select("body").append("svg")
 		.attr("width", width)
 		.attr("height", height)
 
 	d3getSuite("/api/suite/dice", svg, d3createDicePlot)
-
 })()
