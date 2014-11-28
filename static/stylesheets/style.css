@@ -1,0 +1,41 @@
+* {
+  padding: 0px;
+  margin: 0px;
+}
+body {
+  font-family: 'Open Sans';
+  font-weight: 300;
+}
+.button {
+  min-height: 50px;
+  max-width: 50px;
+  display: inline-block;
+  width: 50%;
+  background-color: #00f;
+  border: 1px solid #fff;
+}
+.button .text {
+  color: #fff;
+  text-align: center;
+}
+.button.dice {
+  max-width: 29px;
+}
+.hidden {
+  display: none;
+}
+.graph {
+  margin: 80px;
+  overflow: visible;
+  display: block;
+}
+.graph .axis line,
+.graph .axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+.graph .axis text {
+  font-family: 'Open Sans';
+  font-weight: 300;
+}
