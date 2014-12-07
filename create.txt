@@ -1,0 +1,1 @@
+heroku create flaskbayes --buildpack https://github.com/thenovices/heroku-buildpack-scipy --stack cedar
